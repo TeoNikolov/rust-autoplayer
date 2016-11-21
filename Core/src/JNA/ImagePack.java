@@ -1,10 +1,10 @@
 package JNA;
 
-
 import java.awt.*;
 import java.awt.image.*;
 import java.util.ArrayList;
 
+import Modules.Config;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
@@ -27,7 +27,7 @@ public class ImagePack
 
         System.out.println(c);
 
-        return c < 1000000;
+        return c < Config.cthreshold;
 
     }
 

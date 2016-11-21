@@ -9,14 +9,12 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GlobalKeyListener {
 
-    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     static ArrayList<int[]> temp;
 
     public static void initGlobalKeyListener() {
@@ -27,12 +25,14 @@ public class GlobalKeyListener {
                 int m = nativeKeyEvent.getModifiers();
 
 
-                if (kc == 121) {
-                    if (Config.worker == null) {
+                if (kc == Config.scanHK) {
+                    if (Config.scanner == null) {
                         System.out.println("Thread is null.");
-                        Config.worker = new Thread() {
+                        Config.scanner = new Thread() {
                             @Override
                             public void run() {
+                                int mickeys = 0;
+
                                 while (true) {
                                     long start = System.currentTimeMillis();
 
@@ -40,20 +40,20 @@ public class GlobalKeyListener {
                                         break;
                                     }
 
-                                    Mouse.mouseMove(0, -2);
+                                    Mouse.mouseMove(0, Config.mouseYMove);
 
                                     try {
-                                        sleep(20);
+                                        sleep(Config.screencapDelay);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                         break;
                                     }
 
                                     ArrayList<int[]> l = ImagePack.getPixels(ImagePack.getScreenshot(new Rectangle(0, 0,
-                                            (int) screenSize.getWidth(), (int) screenSize.getHeight())));
+                                            (int) Config.screenSize.getWidth(), (int) Config.screenSize.getHeight())));
 
                                     if (temp != null) {
-                                        if (ImagePack.compare(temp, l)) {
+                                        if (ImagePack.compare(temp, l) && mickeys > Config.loopGrace) {
                                             break;
                                         }
                                     }
@@ -63,30 +63,22 @@ public class GlobalKeyListener {
                                     long finish = System.currentTimeMillis();
                                     int r = (int) (finish - start);
 
-//                                    if (r < 500) {
-//                                        try {
-//                                            sleep(500 - r);
-//                                        } catch (InterruptedException e) {
-//                                            e.printStackTrace();
-//                                            break;
-//                                        }
-//                                    }
-
                                     System.out.println(r);
+                                    mickeys++;
                                 }
 
                                 temp = null;
-                                Config.worker = null;
+                                Config.scanner = null;
                                 System.out.println("Thread ended.");
                             }
                         };
                     }
 
-                    Config.worker.start();
-                } else if (kc == 122) {
-                    if (Config.worker != null) {
+                    Config.scanner.start();
+                } else if (kc == Config.panicHK) {
+                    if (Config.scanner != null) {
                         System.out.println("Thread is not null.");
-                        Config.worker.interrupt();
+                        Config.scanner.interrupt();
                     }
                 }
             }
