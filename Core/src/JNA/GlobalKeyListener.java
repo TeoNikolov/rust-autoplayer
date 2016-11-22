@@ -3,6 +3,7 @@ package JNA;
 import Modules.Config;
 
 import Modules.Mouse;
+import Modules.Performer;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class GlobalKeyListener {
 
     private static ArrayList<int[]> temp;
+    private static boolean forced = false;
 
     public static void initGlobalKeyListener() {
         NativeKeyListener globalKey = new NativeKeyListener() {
@@ -25,13 +27,20 @@ public class GlobalKeyListener {
                 int m = nativeKeyEvent.getModifiers();
 
 
-                if (kc == Config.scanHK) {
+                if (kc == Config.scanHK || kc == Config.forceHK) {
                     if (Config.scanner == null) {
+
+                        if (kc == Config.forceHK) {
+                            forced = true;
+                        } else {
+                            forced = false;
+                            Config.mickeys = 0;
+                        }
+
                         System.out.println("Thread is null.");
                         Config.scanner = new Thread() {
                             @Override
                             public void run() {
-                                int mickeys = 0;
 
                                 while (true) {
                                     long start = System.currentTimeMillis();
@@ -45,7 +54,7 @@ public class GlobalKeyListener {
                                     try {
                                         sleep(Config.screencapDelay);
                                     } catch (InterruptedException e) {
-                                        e.printStackTrace();
+
                                         break;
                                     }
 
@@ -53,7 +62,7 @@ public class GlobalKeyListener {
                                             (int) Config.screenSize.getWidth(), (int) Config.screenSize.getHeight())));
 
                                     if (temp != null) {
-                                        if (ImagePack.compare(temp, l) && mickeys > Config.loopGrace) {
+                                        if (ImagePack.compare(temp, l) && (Config.mickeys > Config.loopGrace || forced)) {
                                             break;
                                         }
                                     }
@@ -64,10 +73,18 @@ public class GlobalKeyListener {
                                     int r = (int) (finish - start);
 
                                     System.out.println(r);
-                                    mickeys++;
+                                    Config.mickeys++;
                                 }
 
-                                temp = null;
+                                // Wait for mouse to auto-adjust, then capture default location
+                                try {
+                                    sleep(50);
+                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+                                }
+
+                                Config.initMLoc = MouseInfo.getPointerInfo().getLocation();
+                                System.out.println("Mickeys: " + Config.mickeys);
                                 Config.scanner = null;
                                 System.out.println("Thread ended.");
                             }
@@ -79,6 +96,22 @@ public class GlobalKeyListener {
                     if (Config.scanner != null) {
                         System.out.println("Thread is not null.");
                         Config.scanner.interrupt();
+                    }
+                } else if (kc == 105) {
+                    Mouse.mouseMove(0, Config.mouseYMove);
+                } else if (kc == 104) {
+                    try {
+                        Performer.performDm();
+                    } catch (InterruptedException ignored) {
+
+                    }
+                } else if (kc == 103) {
+                    Config.mouseSwapped = !Config.mouseSwapped;
+                } else if (kc == 102) {
+                    try {
+                        Performer.performTestSong();
+                    } catch (InterruptedException ignored) {
+
                     }
                 }
             }

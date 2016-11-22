@@ -1,5 +1,6 @@
 package JNA;
 
+import Modules.Performer;
 import com.sun.jna.*;
 import com.sun.jna.platform.win32.BaseTSD.ULONG_PTR;
 import com.sun.jna.platform.win32.Kernel32;
@@ -105,7 +106,7 @@ public class GlobalMouseHook {
                         //do even more stuff
                         break;
                     case GlobalMouseHook.WM_MOUSEMOVE:
-
+                        Performer.calcMovement(info.pt.x, info.pt.y);
                         break;
                     default:
                         break;

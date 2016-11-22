@@ -85,7 +85,7 @@ public class Mouse {
 
     public static void mouseClick(boolean flag) throws InterruptedException {
         mousePress(flag);
-        Thread.sleep(50);
+        Thread.sleep(Config.clickDelay);
         mouseRelease(flag);
     }
 
@@ -98,7 +98,7 @@ public class Mouse {
             jnaLib.mouse_event(MOUSEEVENTF_RIGHTDOWN, x, y, 0, 0);
         }
 
-        Thread.sleep(50);
+        Thread.sleep(Config.clickDelay);
 
         if (!Config.mouseSwapped) {
             jnaLib.mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
