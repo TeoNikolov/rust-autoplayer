@@ -1,5 +1,6 @@
 import JNA.GlobalKeyListener;
 import JNA.GlobalMouseHook;
+import Modules.Config;
 
 public class Main {
 
@@ -8,6 +9,8 @@ public class Main {
     public static void main(String[] args) {
         mouseHook = new GlobalMouseHook();
         mouseHook.setMouseHook();
+
+        System.out.println(Config.postClickDelay);
 
         GlobalKeyListener.initGlobalKeyListener();
         setCloseOperation();
