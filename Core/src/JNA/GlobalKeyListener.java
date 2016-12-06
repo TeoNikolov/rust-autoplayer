@@ -94,8 +94,11 @@ public class GlobalKeyListener {
                     Config.scanner.start();
                 } else if (kc == Config.panicHK) {
                     if (Config.scanner != null) {
-                        System.out.println("Thread is not null.");
                         Config.scanner.interrupt();
+                    }
+
+                    if (Config.performerThread != null) {
+                        Config.performerThread.interrupt();
                     }
                 } else if (kc == 105) {
                     Mouse.mouseMove(0, Config.mouseYMove);
@@ -108,11 +111,56 @@ public class GlobalKeyListener {
                 } else if (kc == 103) {
                     Config.mouseSwapped = !Config.mouseSwapped;
                 } else if (kc == 102) {
-                    try {
-                        Performer.performTestSong();
-                    } catch (InterruptedException ignored) {
+                    if (Config.performerThread == null) {
+                        Config.performerThread = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Performer.performTestSong();
+                                } catch (InterruptedException ignored) {
 
+                                } finally {
+                                    Config.performerThread = null;
+                                }
+                            }
+                        };
                     }
+
+                    Config.performerThread.start();
+                } else if (kc == 101) {
+                    if (Config.performerThread == null) {
+                        Config.performerThread = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Performer.performTestSong2();
+                                } catch (InterruptedException ignored) {
+
+                                } finally {
+                                    Config.performerThread = null;
+                                }
+                            }
+                        };
+                    }
+
+                    Config.performerThread.start();
+                } else if (kc == 100) {
+                    if (Config.performerThread == null) {
+                        Config.performerThread = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Performer.performTitanic();
+                                } catch (InterruptedException ignored) {
+
+                                } finally {
+                                    Config.performerThread = null;
+                                }
+                            }
+                        };
+                    }
+
+                    Config.performerThread.start();
                 }
             }
 

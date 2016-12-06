@@ -5,6 +5,7 @@ import java.awt.*;
 public class Config {
 
     public static Thread scanner; // Scan thread
+    public static Thread performerThread; // Scan thread
     public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public static boolean mouseSwapped = false;
 
@@ -19,14 +20,8 @@ public class Config {
     public static int scanHK = 121; // F10
     public static int panicHK = 122; // F11
 
-    // Delays
-
-    public static int clickDelay = 80;
-    public static int postResetDelay = 50;
-    public static int postSetDelay = 80;
-    public static int postClickDelay = 145;
-
-    // Notes
+    // Notes and Song Stuff
+    static int bpm = 100; // 170 max advisable (for 1/4, 1/2 notes)
 
     static double D0 = 0.0; // 0 of 870
     static double DS0 = -0.12643; // 110 of 870
@@ -45,7 +40,11 @@ public class Config {
     static double E = -0.82758; // 720 of 870
     static double F = -1.0; // 870 of 870
 
+    // Delays
 
-
+    public static int clickDelay = 80;
+    public static int postResetDelay = 50;
+    public static int postSetDelay = 80;
+    public static int postClickDelay = (int) (((double) 60) / bpm*1000) - clickDelay - postResetDelay - postSetDelay;
 
 }
